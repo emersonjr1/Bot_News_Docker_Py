@@ -42,7 +42,8 @@ def run_news_bot():
     
     try:
         for portal in portais:
-            print(f"\n🌍 Acessando: {portal['nome']}...")
+            print("-" * 40)
+            print(f"\n🌍 Acessando: {portal['nome']}...\n")
             driver.get(portal['url'])
             
             # Espera carregar os elementos
@@ -60,10 +61,12 @@ def run_news_bot():
                     # Garante que não imprima linhas vazias (comum em alguns layouts)
                     if titulo:
                         print(f"  {i}. {titulo}")
-                        print(f"     🔗 {link}")
+                        print(f"     🔗 {link}\n")
             
             except Exception as e:
+                 
                 print(f"⚠️ Não foi possível carregar notícias de {portal['nome']}.")
+                print("-" * 40)
 
     except Exception as e:
         print(f"❌ Erro crítico: {e}")
