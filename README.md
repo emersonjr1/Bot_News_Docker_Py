@@ -27,7 +27,7 @@ Docker
 Docker Compose (opcional, mas recomendado)
 
 ## 🔧 Instalação e Execução
-###1. Clonar o repositório
+1. Clonar o repositório
 Bash
 git clone https://github.com/seu-usuario/seu-repositorio.git
 cd seu-repositorio
