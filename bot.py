@@ -5,41 +5,72 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-def run_news_bot():
-    print("--- 🤖 Iniciando Bot de Notícias ---")
-    
+def configurar_driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    # Caminhos padrão para Chromium no Docker (ajuste se necessário)
     chrome_options.binary_location = "/usr/bin/chromium"
     
     service = Service("/usr/bin/chromedriver")
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    return webdriver.Chrome(service=service, options=chrome_options)
+
+def run_news_bot():
+    print("--- 🤖 Iniciando Bot Multi-Notícias ---")
+    
+    # Mapeamento de sites e seus seletores CSS
+    portais = [
+        {
+            "nome": "G1 Globo",
+            "url": "https://g1.globo.com/",
+            "seletor": ".feed-post-link"
+        },
+        {
+            "nome": "CNN Brasil",
+            "url": "https://www.cnnbrasil.com.br/",
+            "seletor": ".home__post" # Seletor principal da home da CNN
+        },
+        {
+            "nome": "BBC Brasil",
+            "url": "https://www.bbc.com/portuguese",
+            "seletor": "h3 a" # Títulos com links na BBC
+        }
+    ]
+
+    driver = configurar_driver()
     
     try:
-        print("🌍 Acessando o portal G1...")
-        driver.get("https://g1.globo.com/")
-        
-        # Espera até 10 segundos para os títulos das notícias aparecerem
-        wait = WebDriverWait(driver, 10)
-        noticias = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "feed-post-link")))
-
-        print(f"\n✅ Sucesso! Encontrei {len(noticias[:5])} notícias principais:\n")
-        
-        # Pega as 5 primeiras notícias e imprime o texto e o link
-        for i, noticia in enumerate(noticias[:5], 1):
-            titulo = noticia.text
-            link = noticia.get_attribute("href")
-            print(f"{i}. {titulo}")
-            print(f"   🔗 {link}\n")
+        for portal in portais:
+            print(f"\n🌍 Acessando: {portal['nome']}...")
+            driver.get(portal['url'])
+            
+            # Espera carregar os elementos
+            wait = WebDriverWait(driver, 10)
+            
+            try:
+                noticias = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, portal['seletor'])))
+                
+                print(f"✅ Encontrei {len(noticias[:3])} notícias principais no {portal['nome']}:")
+                
+                for i, noticia in enumerate(noticias[:3], 1):
+                    titulo = noticia.text.strip()
+                    link = noticia.get_attribute("href")
+                    
+                    # Garante que não imprima linhas vazias (comum em alguns layouts)
+                    if titulo:
+                        print(f"  {i}. {titulo}")
+                        print(f"     🔗 {link}")
+            
+            except Exception as e:
+                print(f"⚠️ Não foi possível carregar notícias de {portal['nome']}.")
 
     except Exception as e:
-        print(f"❌ Erro durante a execução: {e}")
+        print(f"❌ Erro crítico: {e}")
         
     finally:
         driver.quit()
-        print("--- 🏁 Bot finalizado e navegador fechado ---")
+        print("\n--- 🏁 Bot finalizado e navegador fechado ---")
 
 if __name__ == "__main__":
     run_news_bot()
