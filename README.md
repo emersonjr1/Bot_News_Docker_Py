@@ -44,11 +44,16 @@ docker run news-bot
 
 ## 📁 Estrutura do Projeto
 Plaintext
-.
-├── Dockerfile           # Configuração da imagem Docker (Chromium + Python)
-├── requirements.txt     # Lista de dependências do Python (Selenium, etc)
-├── bot.py               # Código-fonte principal do bot
-└── README.md            # Documentação do projeto
+|
+├── Dockerfile  # Configuração da imagem Docker (Chromium + Python)
+|
+├── requirements.txt  # Lista de dependências do Python (Selenium, etc)
+|
+├── bot.py  # Código-fonte principal do bot
+|
+└── README.md  # Documentação do projeto
+
+
 ## 💡 Detalhes Técnicos Importantes
 O bloco if __name__ == "__main__":
 O bot utiliza esta estrutura para garantir que a função run_news_bot() seja executada apenas quando o script for chamado diretamente. Isso permite que suas funções sejam importadas por outros módulos ou testes unitários sem disparar a execução do bot acidentalmente.
